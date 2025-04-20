@@ -1,0 +1,571 @@
+Dtos er vitore   StudentDto
+
+AddressDto
+using System;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Linq;
+using System.Runtime.CompilerServices;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace MauiApp1.Dtos
+{
+    public class AddressDto:INotifyPropertyChanged
+    {
+        private string city;
+        private string street;
+
+
+        public event PropertyChangedEventHandler? PropertyChanged;
+        public void NPC([CallerMemberName] string propName = "")
+        {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propName));
+        }
+
+        public string City { get => city; set { city = value;NPC(); } }
+        public string Street { get => street; set { street = value;NPC(); } }
+
+
+    }
+}
+Base64Converter
+using System;
+using System.Collections.Generic;
+using System.Globalization;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace MauiApp1.Dtos
+{
+    public class Base64Converter : IValueConverter
+    {
+        public object? Convert(object? value, Type targetType, object? parameter, CultureInfo culture)
+        {
+            if (value is string bace64image) 
+            {
+                byte[] data =System.Convert.FromBase64String(bace64image);
+                return ImageSource.FromStream(() => new System.IO.MemoryStream(data));
+            }
+            return null;
+        }
+
+        public object? ConvertBack(object? value, Type targetType, object? parameter, CultureInfo culture)
+        {
+            throw new NotImplementedException();
+        }
+    }
+}
+StudentDto
+using System;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Linq;
+using System.Runtime.CompilerServices;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace MauiApp1.Dtos
+{
+    public class StudentDto:INotifyPropertyChanged
+    {
+        private int id;
+        private string name;
+        private DateTime admissionDate;
+        private bool isActive;
+        private string? imageUrl;
+        private string addressJson;
+        private string baseImage64;
+        private List<AddressDto> addresses = new List<AddressDto>() { new AddressDto() };
+
+        public event PropertyChangedEventHandler? PropertyChanged;
+        public void NPC([CallerMemberName] string propName = "") 
+        {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propName));
+        }
+        public int Id { get => id; set { id = value;NPC(); } }
+        public string Name { get => name; set { name = value;NPC(); } }
+        public DateTime AdmissionDate { get => admissionDate; set { admissionDate = value;NPC(); } }
+        public bool IsActive { get => isActive; set { isActive = value;NPC(); } }
+        public string? ImageUrl { get => imageUrl; set { imageUrl = value;NPC(); } }
+        public string AddressJson { get => addressJson; set { addressJson = value;NPC(); } }
+        public string BaseImage64 { get => baseImage64; set { baseImage64 = value;NPC(); } }
+        public List<AddressDto> Addresses { get => addresses; set { addresses = value;NPC(); } }
+
+    }
+
+}
+Android - resources -xml 
+
+network_security_config
+<?xml version="1.0" encoding="utf-8" ?>
+<network-security-config>
+	<domain-config clertextTrafficPermitted="true">
+		<domain includeSubdomains="true">
+		10.0.2.2
+		</domain>
+	</domain-config>
+</network-security-config>
+
+Rresourse- MainActivity -MainApplication
+using Android.App;
+using Android.Content.PM;
+using Android.OS;
+
+namespace MauiApp1
+{
+    [Activity(Theme = "@style/Maui.SplashTheme", MainLauncher = true, LaunchMode = LaunchMode.SingleTop, ConfigurationChanges = ConfigChanges.ScreenSize | ConfigChanges.Orientation | ConfigChanges.UiMode | ConfigChanges.ScreenLayout | ConfigChanges.SmallestScreenSize | ConfigChanges.Density)]
+    public class MainActivity : MauiAppCompatActivity
+    {
+    }
+}
+
+using Android.App;
+using Android.Runtime;
+
+namespace MauiApp1
+{
+    [Application]
+    public class MainApplication : MauiApplication
+    {
+        public MainApplication(IntPtr handle, JniHandleOwnership ownership)
+            : base(handle, ownership)
+        {
+        }
+
+        protected override MauiApp CreateMauiApp() => MauiProgram.CreateMauiApp();
+    }
+}
+
+AppShell 
+<?xml version="1.0" encoding="UTF-8" ?>
+<Shell
+    x:Class="MauiApp1.AppShell"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:local="clr-namespace:MauiApp1"
+    Shell.FlyoutBehavior="Flyout"
+    FlyoutBackgroundColor="Coral"
+    Title="Maui App">
+
+    <ShellContent
+        Title="Home"
+        ContentTemplate="{DataTemplate local:MainPage}"
+        Route="MainPage" />
+
+    <ShellContent
+        Title="AddStudentPage"
+        ContentTemplate="{DataTemplate local:AddStudentPage}"
+        Route="AddStudentPage" />
+
+    <ShellContent
+        Title="StidentListPage"
+        ContentTemplate="{DataTemplate local:StidentListPage}"
+        Route="StidentListPage" />
+
+</Shell>
+AddStudentPage
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="MauiApp1.AddStudentPage"
+             Title="AddStudentPage">
+    <ScrollView>
+    <VerticalStackLayout>
+            <Entry x:Name="EntryName" Placeholder="enter name"/>
+            <DatePicker x:Name="ADPaker"    />
+            <CheckBox x:Name="CHBox"/>
+
+            <Entry x:Name="EntryCity" Placeholder="enter city name"/>
+            <Entry x:Name="EntryStreet" Placeholder="enter street name"/>
+            <Button Text="Add Address" Clicked="AABtn"/>
+
+            <ListView ItemsSource="{Binding AddressList}">
+                <ListView.ItemTemplate>
+                    <DataTemplate>
+                        <ViewCell>
+                            <StackLayout Orientation="Horizontal">
+                                <Label Text="{Binding City}" FontSize="Medium"/>
+                                <Label Text="," FontSize="Medium"/>
+                                <Label Text="{Binding Street}" FontSize="Medium"/>
+                            </StackLayout>
+                        </ViewCell>
+                    </DataTemplate>
+                </ListView.ItemTemplate>
+            </ListView>
+
+            <Button Text="Uplode Image" Clicked="UPIBtn"/>
+            <Image Source="{Binding PIS}" WidthRequest="100" HeightRequest="100"/>
+            <Button Text="Save Student" Clicked="SSBtn"/>
+        </VerticalStackLayout>
+    </ScrollView>
+</ContentPage>
+ 
+CS
+using MauiApp1.Dtos;
+using System.Collections.ObjectModel;
+using System.Text;
+using System.Text.Json;
+
+namespace MauiApp1;
+
+public partial class AddStudentPage : ContentPage
+{
+    private StudentDto studentDto;
+    private ImageSource pIS;
+
+    public ImageSource PIS { get => pIS; set { pIS = value;OnPropertyChanged(); } }
+
+    public ObservableCollection<AddressDto> AddressList { get; set; }=new ObservableCollection<AddressDto>();
+
+    public AddStudentPage()
+	{
+		InitializeComponent();
+        studentDto=new StudentDto();
+        BindingContext = this;
+	}
+
+    private void AABtn(object sender, EventArgs e)
+    {
+        AddressList.Add(new AddressDto
+        {
+            City = EntryCity.Text,
+            Street = EntryStreet.Text,
+        });
+        EntryCity.Text = "";
+        EntryStreet.Text = "";
+
+    }
+
+    private async void UPIBtn(object sender, EventArgs e)
+    {
+        var result = await FilePicker.PickAsync(new PickOptions { PickerTitle = "Select Image" });
+        if (result != null) 
+        {
+            var s = await result.OpenReadAsync();
+            var ms= new MemoryStream();
+            await s.CopyToAsync(ms);
+            byte[] data = ms.ToArray();
+            studentDto.BaseImage64 = Convert.ToBase64String(data);
+            PIS = ImageSource.FromFile(result.FullPath);
+        }
+    }
+
+    private async void SSBtn(object sender, EventArgs e)
+    {
+        studentDto.Name = EntryName.Text;
+        studentDto.AdmissionDate = ADPaker.Date;
+        studentDto.IsActive=CHBox.IsChecked;
+        studentDto.ImageUrl = studentDto.BaseImage64;
+        studentDto.Addresses = AddressList.ToList();
+        studentDto.AddressJson=JsonSerializer.Serialize(AddressList);
+
+
+        var client = new HttpClient
+        {
+            BaseAddress = new Uri
+            (DeviceInfo.Platform == DevicePlatform.Android ?
+                "http://10.0.2.2:5286" : "http://localhost:5286"
+            )
+        };
+
+        var content = new StringContent
+        (
+            System.Text.Json.JsonSerializer.Serialize(studentDto, new JsonSerializerOptions
+            {
+                PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
+                WriteIndented = true
+            }), Encoding.UTF8, "application/json"
+
+        );
+
+        using var res = await client.PostAsync("/api/stu", content);
+        if (res.IsSuccessStatusCode)
+        {
+            await DisplayAlert("Seccess", "Crested Student", "Ok");
+            await Navigation.PushAsync(new StidentListPage());
+        }
+        else 
+        {
+            await DisplayAlert("Error", "Error Occour", "Ok");
+
+        }
+
+    }
+}
+StudentListPage
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:c="clr-namespace:MauiApp1.Dtos"
+             x:Class="MauiApp1.StidentListPage"
+             Title="StidentListPage">
+    <ContentPage.Resources>
+        <c:Base64Converter x:Key="Base64Converter"/>
+    </ContentPage.Resources>
+    <ScrollView>
+    <VerticalStackLayout>
+            <Button Text="Add Student" Clicked="ASBtn"/>
+
+            <CollectionView x:Name="StudentListView" ItemsSource="{Binding StudentList}">
+                <CollectionView.ItemTemplate>
+                    <DataTemplate>
+                        <VerticalStackLayout>
+                            <Label Text="{Binding Name}" FontSize="Medium"/>
+                                <Label Text="{Binding AdmissionDate}" FontSize="Medium"/>
+                                <Label Text="{Binding IsActive}" FontSize="Medium"/>
+                                <Image Source="{Binding ImageUrl,Converter={StaticResource Base64Converter}}" HeightRequest="100" WidthRequest="100"/>
+
+                                <Label Text="Addresses" FontSize="Large"/>
+                            <CollectionView ItemsSource="{Binding Addresses}">
+                                <CollectionView.ItemTemplate>
+                                    <DataTemplate>
+                                        <HorizontalStackLayout>
+                                            <Label Text="{Binding City}" />
+                                            <Label Text=", " />
+                                            <Label Text="{Binding Street}" />
+                                        </HorizontalStackLayout>
+                                    </DataTemplate>
+                                </CollectionView.ItemTemplate>
+                            </CollectionView>
+                            <HorizontalStackLayout Spacing="10">
+                                <Button Text="Update"  CommandParameter="{Binding .}"/>
+                                <Button Text="Delete" Clicked="DeleteBtn" CommandParameter="{Binding .}"/>
+                            </HorizontalStackLayout>
+                        </VerticalStackLayout>
+                    </DataTemplate>
+                </CollectionView.ItemTemplate>
+            </CollectionView>
+        </VerticalStackLayout>
+    </ScrollView>
+</ContentPage>
+
+CS
+using MauiApp1.Dtos;
+using System.Collections.ObjectModel;
+using System.Text.Json;
+
+namespace MauiApp1;
+
+public partial class StidentListPage : ContentPage
+{
+    public ObservableCollection<StudentDto> StudentList { get; set; }=new ObservableCollection<StudentDto>();
+
+
+    public StidentListPage()
+	{
+		InitializeComponent();
+        BindingContext=this;
+        _ = LodeStudent();
+	}
+
+    private async Task LodeStudent()
+    {
+        var client = new HttpClient
+        {
+            BaseAddress = new Uri
+            (DeviceInfo.Platform == DevicePlatform.Android ?
+                "http://10.0.2.2:5286" : "http://localhost:5286"
+            )
+        };
+
+        var res = await client.GetAsync("/api/stu");
+
+        if (res.IsSuccessStatusCode) 
+        {
+            var student = await res.Content.ReadAsStringAsync();
+
+            StudentList = JsonSerializer.Deserialize<ObservableCollection<StudentDto>>
+                (student, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+
+            if (StudentList != null)
+            {
+                StudentListView.ItemsSource = StudentList;
+            }
+            else 
+            {
+                await DisplayAlert("eror", "Error Occour", "Ok");
+            }
+        }
+    }
+
+    private void ASBtn(object sender, EventArgs e)
+    {
+		Navigation.PushAsync(new AddStudentPage());
+    }
+
+    private async void DeleteBtn(object sender, EventArgs e)
+    {
+        if (sender is Button button && button.CommandParameter is StudentDto studentDto) 
+        {
+            bool result = await DisplayAlert("Delete", $"Delete this student {studentDto.Name}", "Yes", "No");
+            if (result) 
+            {
+                var client = new HttpClient
+                {
+                    BaseAddress = new Uri
+                    (DeviceInfo.Platform == DevicePlatform.Android ?
+                        "http://10.0.2.2:5286" : "http://localhost:5286"
+                    )
+                };
+
+                var res = await client.DeleteAsync($"/api/stu/{studentDto.Id}");
+                if (res.IsSuccessStatusCode)
+                {
+                    await DisplayAlert("Succes", "Deleted", "Ok");
+                    await Navigation.PushAsync(new StidentListPage());
+
+                }
+                else 
+                {
+                    await DisplayAlert("eror", "Error Occour", "Ok");
+                }
+
+            }
+        }
+    }
+}
+
+WebApplication1 DTOs- StudentDto
+using MauiApp1.Dtos;
+using System.Collections.ObjectModel;
+using System.Text.Json;
+
+namespace MauiApp1;
+
+public partial class StidentListPage : ContentPage
+{
+    public ObservableCollection<StudentDto> StudentList { get; set; }=new ObservableCollection<StudentDto>();
+
+
+    public StidentListPage()
+	{
+		InitializeComponent();
+        BindingContext=this;
+        _ = LodeStudent();
+	}
+
+    private async Task LodeStudent()
+    {
+        var client = new HttpClient
+        {
+            BaseAddress = new Uri
+            (DeviceInfo.Platform == DevicePlatform.Android ?
+                "http://10.0.2.2:5286" : "http://localhost:5286"
+            )
+        };
+
+        var res = await client.GetAsync("/api/stu");
+
+        if (res.IsSuccessStatusCode) 
+        {
+            var student = await res.Content.ReadAsStringAsync();
+
+            StudentList = JsonSerializer.Deserialize<ObservableCollection<StudentDto>>
+                (student, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+
+            if (StudentList != null)
+            {
+                StudentListView.ItemsSource = StudentList;
+            }
+            else 
+            {
+                await DisplayAlert("eror", "Error Occour", "Ok");
+            }
+        }
+    }
+
+    private void ASBtn(object sender, EventArgs e)
+    {
+		Navigation.PushAsync(new AddStudentPage());
+    }
+
+    private async void DeleteBtn(object sender, EventArgs e)
+    {
+        if (sender is Button button && button.CommandParameter is StudentDto studentDto) 
+        {
+            bool result = await DisplayAlert("Delete", $"Delete this student {studentDto.Name}", "Yes", "No");
+            if (result) 
+            {
+                var client = new HttpClient
+                {
+                    BaseAddress = new Uri
+                    (DeviceInfo.Platform == DevicePlatform.Android ?
+                        "http://10.0.2.2:5286" : "http://localhost:5286"
+                    )
+                };
+
+                var res = await client.DeleteAsync($"/api/stu/{studentDto.Id}");
+                if (res.IsSuccessStatusCode)
+                {
+                    await DisplayAlert("Succes", "Deleted", "Ok");
+                    await Navigation.PushAsync(new StidentListPage());
+
+                }
+                else 
+                {
+                    await DisplayAlert("eror", "Error Occour", "Ok");
+                }
+
+            }
+        }
+    }
+}
+
+Models - AddDbContext
+using Microsoft.EntityFrameworkCore;
+
+namespace WebApplication1.Models
+{
+    public class AppDbContext:DbContext
+    {
+        public AppDbContext(DbContextOptions<AppDbContext> op):base(op) { }
+
+        public DbSet<Student> Students { get; set; }
+        public DbSet<Address> Addresses { get; set; }
+
+
+    }
+}
+Student
+namespace WebApplication1.Models
+{
+    public class Student
+    {
+        public int Id { get; set; }
+        public string Name { get; set; }
+        public DateTime AdmissionDate { get; set; }
+        public bool IsActive { get; set; }
+        public string? ImageUrl { get; set; }
+        public List<Address> Addresses { get; set; }=new List<Address>();
+
+    }
+
+    public class Address
+    {
+        public int Id { get; set; }
+        public string City { get; set; }
+        public string Street { get; set; }
+        public int StudentId { get; set; }
+
+    }
+}
+
+appsettings
+{
+  "Logging": {
+    "LogLevel": {
+      "Default": "Information",
+      "Microsoft.AspNetCore": "Warning"
+    }
+  },
+  "AllowedHosts": "*",
+  "ConnectionStrings": { "con": "Server=(localdb)\\ProjectModels; Database=MaUi_DB_2; Trusted_connection=true;" }
+}
+
+
+
+
+
+
