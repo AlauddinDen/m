@@ -1,4 +1,4 @@
-Dtos er vitore   StudentDto
+Dtos er vitore   
 
 AddressDto
 using System;
@@ -108,35 +108,6 @@ network_security_config
 	</domain-config>
 </network-security-config>
 
-Rresourse- MainActivity -MainApplication
-using Android.App;
-using Android.Content.PM;
-using Android.OS;
-
-namespace MauiApp1
-{
-    [Activity(Theme = "@style/Maui.SplashTheme", MainLauncher = true, LaunchMode = LaunchMode.SingleTop, ConfigurationChanges = ConfigChanges.ScreenSize | ConfigChanges.Orientation | ConfigChanges.UiMode | ConfigChanges.ScreenLayout | ConfigChanges.SmallestScreenSize | ConfigChanges.Density)]
-    public class MainActivity : MauiAppCompatActivity
-    {
-    }
-}
-
-using Android.App;
-using Android.Runtime;
-
-namespace MauiApp1
-{
-    [Application]
-    public class MainApplication : MauiApplication
-    {
-        public MainApplication(IntPtr handle, JniHandleOwnership ownership)
-            : base(handle, ownership)
-        {
-        }
-
-        protected override MauiApp CreateMauiApp() => MauiProgram.CreateMauiApp();
-    }
-}
 
 AppShell 
 <?xml version="1.0" encoding="UTF-8" ?>
