@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:c="clr-namespace:MauiApp1.Dtos"
+             x:Class="MauiApp1.StidentListPage"
+             Title="StidentListPage">
+    <ContentPage.Resources>
+        <c:Base64Converter x:Key="Base64Converter"/>
+    </ContentPage.Resources>
+    <ScrollView>
+    <VerticalStackLayout>
+            <Button Text="Add Student" Clicked="ASBtn"/>
+
+            <CollectionView x:Name="StudentListView" ItemsSource="{Binding StudentList}">
+                <CollectionView.ItemTemplate>
+                    <DataTemplate>
+                        <VerticalStackLayout>
+                            <Label Text="{Binding Name}" FontSize="Medium"/>
+                                <Label Text="{Binding AdmissionDate}" FontSize="Medium"/>
+                                <Label Text="{Binding IsActive}" FontSize="Medium"/>
+                                <Image Source="{Binding ImageUrl,Converter={StaticResource Base64Converter}}" HeightRequest="100" WidthRequest="100"/>
+
+                                <Label Text="Addresses" FontSize="Large"/>
+                            <CollectionView ItemsSource="{Binding Addresses}">
+                                <CollectionView.ItemTemplate>
+                                    <DataTemplate>
+                                        <HorizontalStackLayout>
+                                            <Label Text="{Binding City}" />
+                                            <Label Text=", " />
+                                            <Label Text="{Binding Street}" />
+                                        </HorizontalStackLayout>
+                                    </DataTemplate>
+                                </CollectionView.ItemTemplate>
+                            </CollectionView>
+                            <HorizontalStackLayout Spacing="10">
+                                <Button Text="Update"  CommandParameter="{Binding .}"/>
+                                <Button Text="Delete" Clicked="DeleteBtn" CommandParameter="{Binding .}"/>
+                            </HorizontalStackLayout>
+                        </VerticalStackLayout>
+                    </DataTemplate>
+                </CollectionView.ItemTemplate>
+            </CollectionView>
+        </VerticalStackLayout>
+    </ScrollView>
+</ContentPage>
